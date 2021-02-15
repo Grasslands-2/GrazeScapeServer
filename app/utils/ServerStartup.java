@@ -78,7 +78,7 @@ public class ServerStartup {
         //db.Farm.testLoadShapes();
 
         // Tests random forest model
-         testPMML_rf();
+         //testPMML_rf();
         // Tests linear model
         // testPMML_linear();
         

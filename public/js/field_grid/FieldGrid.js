@@ -72,7 +72,7 @@ Ext.create('Ext.data.Store', {
 	fields:[ 'name', 'soilP', 'soilOM', 'rotationVal', 'rotationDisp', 'tillageVal', 'tillageDisp', 'coverCrop', 
 		'onContour', 'manurePastures', 'grazeDairyLactating', 'grazeDairyNonLactating', 'grazeBeefCattle',
 		'grassVal', 'grassDisp'],
-	data: [{ 
+	/*data: [{ 
 		name: 'East 50', soilP: 35, soilOM: 1.4,
 		rotationVal: 'dr1', rotationDisp: 'Dairy Rotation (cg/cs/alf_3x)', 
 		tillageVal: 'scu', tillageDisp: 'Spring Cultivation',
@@ -82,7 +82,7 @@ Ext.create('Ext.data.Store', {
 		rotationVal: 'dr1', rotationDisp: 'Dairy Rotation (cg/cs/alf_3x)', 
 		tillageVal: 'nt', tillageDisp: 'Spring Cultivation',
 		onContour: false, manurePastures: false
-	}]
+	}]*/
 });
 
 //------------------------------------------------------------------------------

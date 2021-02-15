@@ -40,7 +40,7 @@ public class FieldGeometry extends Model {
 		SqlRow sw = Ebean.createSqlQuery("SELECT ST_AsText(ST_GeomFromGeoJSON( ? )) as wkt")
 				.setParameter(1, geoJson)
 				.findOne();
-		
+		//this is taking wkt string and returning to db ZJH
 		this.geom = sw.getString("wkt");
 		return this;
 	}

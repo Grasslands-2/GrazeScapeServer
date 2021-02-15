@@ -47,6 +47,7 @@ DSS.popupContainer
 //------------------------------------------------------------------------------
 Ext.define('DSS.map.Main', {
 //------------------------------------------------------------------------------
+
 	extend: 'Ext.Container',//Component',
 	alias: 'widget.main_map',
 	
@@ -263,7 +264,19 @@ Ext.define('DSS.map.Main', {
 				imageExtent: extent
 			})
 		})
-		
+		var pointStyle = new ol.style.Style({
+			image: new ol.style.Circle({
+			  radius: 7,
+			  stroke: new ol.style.Stroke({
+					color: 'orange',
+					width: 1
+			  }),
+			  fill: new ol.style.Fill({
+					color: '#ffe4b3'
+			  })
+			})
+	});
+
 		//---------------------------------------
 		let defaultFieldStyle = new ol.style.Style({
 			stroke: new ol.style.Stroke({
@@ -321,7 +334,10 @@ Ext.define('DSS.map.Main', {
 			})
 			fd.loadRawData(records);
 		})
+		
 */		
+//Attempt at bringing in GeoServer WFS layers
+		//let farmGSWFS = new ol.source.Vector({})
 		let farmSource = new ol.source.Vector({
 			format: new ol.format.GeoJSON(),
 			loader: function(extent, resolution, projection) {
@@ -335,7 +351,7 @@ Ext.define('DSS.map.Main', {
 				xhr.onload = function() {
 					if (xhr.status == 200) {
 						farmSource.addFeatures(farmSource.getFormat().readFeatures(xhr.responseText));
-						DSS.viewModel.master.set("farm_count", farmSource.getFeatures().length);
+						//DSS.viewModel.master.set("farm_count", farmSource.getFeatures().length);
 					}
 					else {
 						onError();
@@ -359,6 +375,78 @@ Ext.define('DSS.map.Main', {
 				return me.DSS_zoomStyles['style' + r];
 			}
 		});
+
+		//--------------------------------------------------------- 
+		var farms_1Source = new ol.source.Vector({
+			format: new ol.format.GeoJSON(),
+			url: function(extent) {
+				return 'http://localhost:8081/geoserver/wfs?service=wfs&?version=1.1.0&request=GetFeature&typeName=Farms:farm_1&' +
+				'maxfeatures=50&outputformat=application/json&srsname=EPSG:4326';
+			},
+			//strategy: ol.loadingstrategy.bbox
+		});
+		var fields_1Source = new ol.source.Vector({
+			format: new ol.format.GeoJSON(),
+			url: function(extent) {
+				return 'http://localhost:8081/geoserver/wfs?service=wfs&?version=1.1.0&request=GetFeature&typeName=Farms:field_1&' +
+				'maxfeatures=50&outputformat=application/json&srsname=EPSG:4326';
+			},
+			//strategy: ol.loadingstrategy.bbox
+		});
+		/*let farms_1Source = new ol.source.Vector({
+			//url: 'http://localhost:8081/geoserver/Farms/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Farms:farm_1',
+			format: new ol.format.GeoJSON(),
+			loader: function(extent, resolution, projection) {
+				var proj = projection.getCode();
+				var url = 'http://localhost:8081/geoserver/wfs?service=wfs&?version=2.0.0&request=GetFeature&typeName=Farms:farm_1'
+				//var url = 'http://localhost:8081/geoserver/Farms/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=Farms:farm_1&maxFeatures=50&outputFormat=application%2Fjson&srsname=proj'+proj;
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET',url);
+				var onError = function() {
+					farms_1Source.removeLoadedExtent(extent);
+				}
+				xhr.onerror = onError;
+				xhr.onload = function() {
+					if (xhr.status == 200) {
+						farms_1Source.addFeatures(
+							farms_1Source.getFormat().readFeatures(xhr.responseText));
+						//DSS.viewModel.master.set("farm_count", farmSource.getFeatures().length);
+					}else {
+						onError();
+					  }
+				}
+				xhr.send();
+				}
+			});*/
+		DSS.layer.farms_1 = new ol.layer.Vector({
+			title: 'farms_1',
+			visible: true,
+			updateWhileAnimating: true,
+			updateWhileInteracting: true,
+			source: farms_1Source,
+			style: function(feature, resolution) {
+				let r = 1.0 - resolution / 94.0;
+				if (r < 0) r = 0
+				else if (r > 1) r = 1
+				// value from 3 to 16
+				r = Math.round(Math.pow(r, 3) * 13 + 3)
+				return me.DSS_zoomStyles['style' + r];
+			}
+		})
+		DSS.layer.fields_1 = new ol.layer.Vector({
+			title: 'fields_1',
+			visible: true,
+			updateWhileAnimating: true,
+			updateWhileInteracting: true,
+			source: fields_1Source,
+			style: function(feature, resolution) {
+				
+				if (DSS.fieldStyleFunction) {
+					return DSS.fieldStyleFunction(feature, resolution);
+				}
+				else return defaultFieldStyle;
+			},
+		});	
 		
 		//--------------------------------------------------------------
 		me.map = DSS.map = new ol.Map({
@@ -371,7 +459,9 @@ Ext.define('DSS.map.Main', {
 				DSS.layer.hillshade,
 //				DSS.layer.fields,
 				DSS.layer.farms,
-			],//------------------------------------------------------------------------
+				DSS.layer.farms_1
+				 ],
+				//------------------------------------------------------------------------
 			view: new ol.View({
 				center: [-10118000,5375100],
 				zoom: 12,
@@ -630,4 +720,3 @@ var CanvasLayer = /*@__PURE__*/(function (Layer) {
 
 	return CanvasLayer;
 }(ol.layer.Tile));
-
