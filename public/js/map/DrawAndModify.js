@@ -95,7 +95,8 @@ Ext.define('DSS.map.DrawAndModify', {
 	
 	//--------------------------------------------------------------------------
 	addDrawTool: function(map, fieldLayerSource) {
-		
+				console.log("define dss.draw")
+
 		DSS.draw = new ol.interaction.Draw({
 			source: fieldLayerSource,
 			type: 'Polygon',

@@ -243,6 +243,8 @@ Ext.define('DSS.inspector.Main', {
 	
 	//---------------------------------------------------------------------------------
 	validateImageOL: function(json, layer, tryCount) {
+	    console.log("IMMMMMMMMMMMMMMMMMMMMMMMMage");
+	    console.log(json.url)
 		var me = this;
 		tryCount = (typeof tryCount !== 'undefined') ? tryCount : 0;
 		

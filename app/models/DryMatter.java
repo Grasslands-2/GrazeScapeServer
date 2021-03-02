@@ -43,10 +43,13 @@ public class DryMatter implements RasterModel {
     
 	@Override
 	public RasterResult compute(Extents ext, JsonNode settings) throws Exception {
-
-		Long farmId = utils.Json.safeGetOptionalLong(settings, "farm_id", 1L); 
+		logger.error("Running dry matter modeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeel");
+//		logger.error(ext);
+//		logger.error(settings);
+		Long farmId = utils.Json.safeGetOptionalLong(settings, "farm_id", 1L);
+		logger.error(String.valueOf(farmId));
 //		JsonNode options = settings.get("options");
-		
+
 		db.Farm farm = db.Farm.find.byId(farmId);
 		if (farm == null) {
 			logger.error("Farm was not found");
@@ -57,12 +60,12 @@ public class DryMatter implements RasterModel {
 			return null;
 		}
 		// TODO: actually use the scenario id instead of taking the first entry...
-//		Long scenarioId = utils.Json.safeGetOptionalLong(settings, "scenario_id", 1L); 
+//		Long scenarioId = utils.Json.safeGetOptionalLong(settings, "scenario_id", 1L);
 		Scenario scen = farm.scenarios.get(0);
 
 		List<JsonNode> features = new ArrayList<>();
 		Map<Integer, CropData> cropMap = new HashMap<>();
-		
+
 		for (Field f: scen.mFields) {
 			// Get the total landcover bit pattern so we can render that composite value out
 			//	Also note the unique yield models we'll need to allocate

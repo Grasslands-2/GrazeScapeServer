@@ -130,7 +130,10 @@ Ext.define('DSS.state.MapStateTools', {
     //
     //----------------------------------------
     disableFieldDraw: function() {
-    	
+        console.log(DSS)
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        console.log(DSS.draw);
+
 		DSS.draw.setActive(false);
 		DSS.snap.setActive(false);
 		DSS.modify.setActive(false);    	

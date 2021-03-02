@@ -32,6 +32,7 @@ libraryDependencies ++= Seq(
   "io.ebean" % "ebean-agent" % "11.45.1",
   "org.jpmml" % "pmml-evaluator" % "1.5.3",
   "org.jpmml" % "pmml-evaluator-extension" % "1.5.3",
+  filters
 )
 	
 lazy val myProject = (project in file("."))

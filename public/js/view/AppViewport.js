@@ -93,7 +93,7 @@ Ext.define('DSS.view.AppViewport', {
 				scrollable: 'y',
 				layout: DSS.utils.layout('vbox', 'start', 'stretch'),
 				items: [
-					DSS.Inspector // Directly add the singleton instance...
+					DSS.Inspector // Directly add ;;the singleton instance...
 				],
 				listeners: {
 					afterrender: function(self) {

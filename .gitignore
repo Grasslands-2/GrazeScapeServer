@@ -3,6 +3,7 @@
 # system files
 *.DS_Store
 *.swp
+*.idea
 
 # secrets
 .env

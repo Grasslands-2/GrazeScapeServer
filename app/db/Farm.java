@@ -71,7 +71,7 @@ public class Farm extends Model {
 				.setParameter(1, x)
 				.setParameter(2, y)
 				.findOne();
-		
+
 		this.location = sw.getString("wkt_pt");
 		return this;
     }

@@ -90,6 +90,9 @@ public class Model_CropYield extends Model_Base
 	public Boolean initialize() {
 		
 		mOutput = new long[mHeight][mWidth];
+		logger.debug(String.valueOf("Dimensions!!!!!!!!!!!!"));
+		logger.debug(String.valueOf(mHeight));
+		logger.debug(String.valueOf(mWidth));
 		debugLog("  > Allocated memory for Yield");
 
 		mbInitialized = true;
@@ -125,7 +128,7 @@ public class Model_CropYield extends Model_Base
 		
 		for (int y = 0; y < mHeight; y++) {
 			for (int x = 0; x < mWidth; x++) {
-				
+				debugLog("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHi");
 				long packedYield = 0;
 				float 	_slope 	= slope[y][x], 
 						_depth 	= depth[y][x], 

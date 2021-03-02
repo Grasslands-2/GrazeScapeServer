@@ -21,7 +21,7 @@ public class Yield implements RasterModel {
 
 	@Override
 	public RasterResult compute(Extents ext, JsonNode settings) throws Exception {
-	
+		logger.error("Running crop yield modeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeel");
 		JsonNode options = settings.get("options");
 		String cropModel = Json.safeGetOptionalString(options, "crop", "corn");
 		LinearModel lm = null;
@@ -44,6 +44,7 @@ public class Yield implements RasterModel {
 		
 		for (int y = ext.y2(); y < ext.y1(); y++) {
 			for (int x = ext.x1(); x < ext.x2(); x++) {
+//				bwcYield[y][x] = lm.calculate(x, y).floatValue();
 				bwcYield[y][x] = lm.calculate(x, y).floatValue();
 			}
 		}

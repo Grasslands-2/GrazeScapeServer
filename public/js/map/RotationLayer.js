@@ -8,7 +8,8 @@ Ext.define('DSS.map.RotationLayer', {
 	//-------------------------------------------------------------------------
 	instantiate: function(map) {
 		let me = this;
-		
+				console.log("init rotation layer &&&&&&&&&&&&&&&&&&&777");
+
 		DSS['rotationStyles'] = { };
 		
 		DSS.layerSource.fields

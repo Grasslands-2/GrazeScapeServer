@@ -15,6 +15,7 @@ Ext.application({
 	],
 	mainView: 'DSS.view.AppViewport',
 	init: function() {
+	console.log('Unmatchedafasdfsdsdf');
 		Ext.state.Manager.setProvider(
 			Ext.create('Ext.state.CookieProvider', {
 				path: '/'

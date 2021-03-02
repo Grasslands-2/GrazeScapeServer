@@ -120,12 +120,13 @@ public class HomeController extends Controller {
 	//------------------------------------------------------------------
 	@Inject
 	public HomeController(ServerStartup startup) {
+		logger.info("hello");
 		mSessions = Caffeine.newBuilder().expireAfterAccess(8, TimeUnit.DAYS).build();
 	} 
 	
 	//------------------------------------------------------------------
 	public Result app(Http.Request request) {
-
+		logger.info("hello2*");
 		Session session = request.session();
 		if (session != null) {
 			Optional<String> user = session.get("user");
@@ -143,7 +144,7 @@ public class HomeController extends Controller {
 
 	//------------------------------------------------------------------
 	public Result getOptions(String type) {
-		
+		logger.debug("Get options type: " + type);
 		JsonNode js = null;
 		if (DETAILED_LOG) {
 			logger.debug("Get options type: " + type);
@@ -157,6 +158,15 @@ public class HomeController extends Controller {
 	//------------------------------------------------------------------
 	public Result getFarms() {
 		return ok(db.Farm.getAllAsGeoJson());
+
+//		.withHeaders(
+//				"Access-Control-Allow-Origin" , "*",
+//				"Access-Control-Allow-Methods" , "GET, POST, PUT, DELETE, OPTIONS",
+//				"Access-Control-Allow-Headers" , "Accept, Origin, Content-type, X-Json, X-Prototype-Version, X-Requested-With",
+//				"Access-Control-Allow-Credentials" , "true",
+//				"Access-Control-Max-Age" , Integer.toString(60 * 60 * 24)
+//		);
+
 	}
 	
 	//------------------------------------------------------------------
@@ -221,7 +231,7 @@ public class HomeController extends Controller {
 		else if (mode.equalsIgnoreCase("dry-matter")) mc = new DryMatter();
 		else if (mode.equalsIgnoreCase("p-loss")) mc = new PLossModel();
 		else if (mode.equalsIgnoreCase("p-loss-real")) mc = new AwePLossModel();
-		
+
 		else if (mode.equalsIgnoreCase("slope")) {
 			mc = new RasterInspector().dataLayer("slope");//.setTransform(new SlopePercentToAngle());
 		}
@@ -245,16 +255,16 @@ public class HomeController extends Controller {
 		else if (mode.equalsIgnoreCase("cdl")) {
 			return processCategorical(request);
 		}
-		
+
 		return computeModel(request, mc);
 	}
 
 	//-------------------------------------------------------
 	public Result processCategorical(Http.Request request) {
-		
+
 		Layer_Integer cdl = Layer_CDL.get();
 		int[][] cdlData = cdl.getIntData();
-		
+
 		JsonNode node = request.body().asJson();
 		Extents ext = new Extents().fromJson((ArrayNode)node.get("extent")).toRasterSpace();
 		JsonNode restrictions = node.get("restrictions");
@@ -267,7 +277,7 @@ public class HomeController extends Controller {
 				logger.debug("Has model options:" + options.toPrettyString());
 			}
 		}
-		
+
 		Map<Integer,Integer> deMask = new HashMap<>();
 		for (int i = 1; i < 31; i++) {
 			deMask.put((1 << (i-1)), i);
@@ -280,14 +290,14 @@ public class HomeController extends Controller {
 				data[y][x] = deMask.get(cdlData[y + y1][x + x1]).byteValue();
 			}
 		}
-		
+
 		JsonNode slopeRestriction = restrictions.get("restrict_by_slope");
 		if (slopeRestriction != null) {
 			Float value = utils.Json.safeGetOptionalFloat(slopeRestriction, "value", 10.0f);
 			Boolean lessThan = utils.Json.safeGetOptionalString(slopeRestriction, "compare", "less-than").equalsIgnoreCase("less-than");
 			data = Filters.restrictToSlope(data, w, h, lessThan, value);
 		}
-		
+
 		JsonNode landcoverRestriction = restrictions.get("restrict_to_landcover");
 		if (landcoverRestriction != null) {
 			Boolean restrictToRowCrops = utils.Json.safeGetOptionalBoolean(landcoverRestriction, "row_crops", false);
@@ -296,24 +306,24 @@ public class HomeController extends Controller {
 				data = Filters.restrictToAgriculture(data, w, h, restrictToRowCrops, restrictToGrasses);
 			}
 		}
-		
+
 		ObjectNode result = null;
 		Long idx = pngCounter.getAndIncrement();
 		File fp = new File(FileService.getDirectory() + "out" + idx + ".png");
 		result  = (ObjectNode)RasterToPNG.saveClassified(data, cdl.getKey(), w, h, fp);
-		
-		Json.addToPack(result, "url", "renders/out" + idx + ".png", 
-						"extent", ext.toJson());	
-		
+
+		Json.addToPack(result, "url", "renders/out" + idx + ".png",
+						"extent", ext.toJson());
+
 		return ok(result);
 	}
-	
+
 	//-------------------------------------------------------
 	public Result computeModel(Http.Request request, RasterModel modelFunction) {
-	
+
 		JsonNode settings = request.body().asJson();
 
-		Long farmId = utils.Json.safeGetOptionalLong(settings, "farm_id", null); 
+		Long farmId = utils.Json.safeGetOptionalLong(settings, "farm_id", null);
 
 		JsonNode restrictions = settings.get("restrictions");
 		JsonNode options = settings.get("options");
@@ -327,14 +337,14 @@ public class HomeController extends Controller {
 		}
 		// Extent array node can be missing, in which case we get a clipper that extracts the entire area
 		Extents ext = new Extents().fromJson((ArrayNode)settings.get("extent")).toRasterSpace();
-		
+
 		final Integer rasterHeight = 2600, rasterWidth = 1500;
 		ObjectNode result = null;
-		
+
 		float[][] modelResults = null;
 		RasterResult rr = null;
 		try {
-			rr = modelFunction.compute(ext, settings); 
+			rr = modelFunction.compute(ext, settings);
 			modelResults = rr.rasterOut;
 		} catch (Exception e1) {
 			e1.printStackTrace();
